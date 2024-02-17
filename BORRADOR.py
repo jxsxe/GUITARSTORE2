@@ -5,6 +5,12 @@ import tkinter.messagebox as messagebox
 import ttkthemes
 from ttkthemes import ThemedTk
 from tkinter import Scrollbar
+import pyodbc
+#conexion con la base de datoa
+conneccion = pyodbc.connect('DRIVER={SQL Server};'
+                      'SERVER=ST-JXSXE;'
+                      'DATABASE=GuitarStore;'
+                      'Trusted_Connection=yes;')
 #ventana principal
 ventana = tk.Tk()
 titulo_centrado = " " * 100+ "GUITARSTORE" + " " * 40
@@ -72,7 +78,7 @@ def Objetos_de_combobox( ):
     boton_regresar = tk.Button(nuevo_marco, text="Regresar", command=lambda: nuevo_marco.destroy())
     boton_regresar.place(x=10, y=10)
 
-def crear_objetos(imagen, precio, row, column, subsample, toolip, x, y):
+def crear_objetos(imagen, precio, row, column, subsample, toolip, x, y, Prod, stok, valor):
     #OBJETOS GENRALES
     decompras=tk.PhotoImage(file="carrito.png")
     decompras2=decompras.subsample(15)
@@ -83,7 +89,7 @@ def crear_objetos(imagen, precio, row, column, subsample, toolip, x, y):
     l_ic1.grid(row=row,column=column,padx=20)
     pic1=tk.Label(frame_interior, text=precio)
     pic1.grid(row=row+1, column=column)
-    bic1=tk.Button(frame_interior, text="Añadir al carrito", image=decompras2, compound="right", bd=4, font=("Arial", 10))
+    bic1=tk.Button(frame_interior, text="Añadir al carrito", image=decompras2, compound="right", bd=4, font=("Arial", 10), command=lambda: agregar_al_carrito(Prod, stok, valor))
     bic1.image=decompras2
     bic1.grid(row=row+2, column=column, pady=10)
     #toolip1
@@ -100,22 +106,21 @@ def Intrumentos_cuerda(event):
     seleccion = event.widget.get()
     combobox_values = event.widget.cget("values")
     if seleccion in combobox_values[1]:#GUITARRAS
-        # imagen, precio, row, column, subsample, toolip
+        # imagen, precio, row, column, subsample, toolip, nombre del producto, precio en float, stok
         Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT",10, 35)
-        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 7, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 9, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 1, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 3, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 7, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 9, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
+        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35, "GIBSON LPTR00WSNH1", 1,250 )
+        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT",10, 35,"GIBSON LPTR00WSNH1", 1,240)
+        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35,"GIBSON LPTR00WSNH1",1,280)
+        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 7, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35,"GIBSON LPTR00WSNH1",1,10)
+        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 9, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35,"GIBSON LPTR00WSNH1",1,86)
+        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 1, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35,"GIBSON LPTR00WSNH1",1,75)
+        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 3, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35, "GIBSON LPTR00WSNH1",1,56)
+        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35, "GIBSON LPTR00WSNH1",1,65)
+        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 7, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35,"GIBSON LPTR00WSNH1",1,42)
+        crear_objetos( "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 4, 9, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35,"GIBSON LPTR00WSNH1", 1,68)
     elif seleccion in combobox_values[2]:#BAJOS
         Objetos_de_combobox()
         crear_objetos( "SPECTOR-NSDM5HAUNT-NS-Dimension-5-–.png", "Precio: 250,00$", 1, 1, 8, "SPECTOR-NSDM5HAUNT-NS-Dimension-5", 10, 35)
-        
         crear_objetos("TAYLOR-AD17e-BLACKTOP.png", "Precio: 250,00$", 1, 5, 10, "TAYLOR-AD17e-BLACKTOP",10, 35)
        
     elif seleccion in combobox_values[3]:#VIOLINES
@@ -156,33 +161,7 @@ def Intrumentos_percusion(event):
         crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
         crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
         crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    seleccion = event.widget.get()
-    combobox_values = event.widget.cget("values")
-    if seleccion in combobox_values[1]:#BATERIAS ACUSTICAS
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[2]:#BATERIAS ELECTRONICAS
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[3]:#PLATILLOS
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[4]:#pPERCUSION LATINA
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[5]:#MARCHA
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
+    
 def TECLADO(event):
     seleccion = event.widget.get()
     combobox_values = event.widget.cget("values")
@@ -202,38 +181,6 @@ def TECLADO(event):
         crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
         crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
     elif seleccion in combobox_values[4]:#pPERCUSION LATINA
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[5]:#MARCHA
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    seleccion = event.widget.get()
-    combobox_values = event.widget.cget("values")
-    if seleccion in combobox_values[1]:#BATERIAS ACUSTICAS
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[2]:#BATERIAS ELECTRONICAS
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[3]:#PLATILLOS
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[4]:#pPERCUSION LATINA
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[5]:#MARCHA
         Objetos_de_combobox()
         crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
         crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
@@ -266,6 +213,12 @@ def Intrumentos_viento(event):
         crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
         crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
         crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
+    elif seleccion in combobox_values[6]:#MARCHA
+        Objetos_de_combobox()
+        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
+        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
+        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
+
 def Others(event):
     seleccion = event.widget.get()
     combobox_values = event.widget.cget("values")
@@ -280,16 +233,6 @@ def Others(event):
         crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
         crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
     elif seleccion in combobox_values[3]:#PLATILLOS
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[4]:#pPERCUSION LATINA
-        Objetos_de_combobox()
-        crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
-        crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
-        crear_objetos("GIBSON MCRS4SWLWB J-45 STUDIO WALNUT.png", "Precio: 250,00$", 1, 5, 5, "GIBSON MCRS4SWLWB J-45 STUDIO WALNUT",10, 35)
-    elif seleccion in combobox_values[5]:#MARCHA
         Objetos_de_combobox()
         crear_objetos( "GIBSON LPTR00WSNH1.png", "Precio: 250,00$", 1, 1, 8, "GIBSON LPTR00WSNH1", 10, 35)
         crear_objetos( "FENDER 011-3940-761 AM PRO II TELE DK NIT.png", "Precio: 250,00$", 1, 3, 8, "FENDER 011-3940-761 AM PRO II TELE DK NIT", 10 ,35)
@@ -335,11 +278,11 @@ ofertitas=ttk.Treeview( ventana, columns=('Id', 'Nombre', 'stok', 'Precio'), sho
 ofertitas.heading('Id', text="#")
 ofertitas.column('Id', width=10)
 ofertitas.heading('Nombre', text='Instrumento')
-ofertitas.column('Nombre',width=80)
+ofertitas.column('Nombre',width=100)
 ofertitas.heading('Precio', text='Valor unitario')
-ofertitas.column('Precio', width=120)
+ofertitas.column('Precio', width=10)
 ofertitas.heading('stok', text='Cantidad')
-ofertitas.column('stok', width=80)
+ofertitas.column('stok', width=50)
 #ofertitas.place(x=0,y=10)
 def agregar_al_carrito( nombre, cantidad, precio):
     
@@ -492,16 +435,16 @@ boton_inicio.bind("<Leave>", ocultar_tooltip)
 def ir_a_comprar():
     ventana_opcion = tk.Toplevel(ventana)
     ventana_opcion.title("Facturación")
-    ventana_opcion.geometry("400x500")
+    ventana_opcion.geometry("400x540")
     ventana_opcion.config(bg="gray")
     ventana_opcion.resizable(False,False)
     ventana_opcion.iconbitmap("logo.ico")
 
     global Factura
-    Factura=tk.LabelFrame(ventana_opcion, width=300, height=450, bd=5)
+    Factura=tk.LabelFrame(ventana_opcion, width=320, height=450, bd=5, bg="gray")
     Factura.grid(padx=40, row=1, column=1, pady=25)
     global tabla
-    tabla=ttk.Treeview(Factura, columns=('Id', 'Nombre', 'stok', 'Precio'), show="headings", height=450)
+    tabla=ttk.Treeview(Factura, columns=('Id', 'Nombre', 'stok', 'Precio'), show="headings")
     tabla.heading('Id', text="#")
     tabla.column('Id', width=10)
     tabla.heading('Nombre', text='Instrumento')
@@ -510,7 +453,7 @@ def ir_a_comprar():
     tabla.column('Precio', width=120)
     tabla.heading('stok', text='Cantidad')
     tabla.column('stok', width=80)
-    tabla.place(x=0,y=10)
+    tabla.place(x=10,y=10, height=420)
 
     for item in ofertitas.get_children():
         values = ofertitas.item(item, 'values')
@@ -520,7 +463,7 @@ def ir_a_comprar():
     label.place(x=125,y=17)
     
     boton_volver = tk.Button(ventana_opcion, text="Volver a la ventana principal", command=ventana_opcion.destroy)
-    boton_volver.place(x=15,y=475)
+    boton_volver.place(x=15,y=500)
 
 fondo_carrito=tk.PhotoImage(file="carrito.png")
 carrito_redimensiondao=fondo_carrito.subsample(15)
